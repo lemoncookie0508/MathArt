@@ -1,6 +1,5 @@
 package lepl.mathart;
 
-import javafx.geometry.Side;
 import javafx.scene.CacheHint;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,10 +13,7 @@ public class Circle extends AnchorPane {
     public static double TIME_SPEED = 1;
 
     private final double width;
-    private double speed;
-    public double getSpeed() {
-        return speed;
-    }
+    private final double speed;
 
     private static final Background d = new Background(new BackgroundImage(
             new Image(Constant.getImageResource("dote.png")),
@@ -54,13 +50,7 @@ public class Circle extends AnchorPane {
     }
 
     private Circle depend;
-    public Circle getDepend() {
-        return depend;
-    }
     private Circle linkedCircle;
-    public Circle getLinkedCircle() {
-        return linkedCircle;
-    }
     private void setLinkedCircle(Circle circle) {
         if (linkedCircle != null) getChildren().remove(linkedCircle);
         linkedCircle = circle;
@@ -88,23 +78,5 @@ public class Circle extends AnchorPane {
     }
     public double getEndY() {
         return Math.sin(Math.toRadians(getTotalAngle())) * width + (linkedCircle != null ? linkedCircle.getEndY() : 0);
-    }
-    public double circleTime() {
-        return lcm(360 / speed, (linkedCircle != null ? linkedCircle.circleTime() : 1));
-    }
-    private static double gcd(double a, double b) {
-        while (b != 0) {
-            double temp = a % b;
-            a = b;
-            b = temp;
-        }
-        return Math.abs(a);
-    }
-    private static double lcm(double a, double b) {
-        double gcd_value = gcd(a, b);
-
-        if (gcd_value == 0) return 0; // 인수가 둘다 0일 때의 에러 처리
-
-        return Math.abs( (a * b) / gcd_value );
     }
 }

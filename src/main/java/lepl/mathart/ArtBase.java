@@ -114,7 +114,10 @@ public class ArtBase extends LBase {
                 translate.setY(transY - mouseY + e.getY());
             }
         });
-        getMainPane().setOnMouseEntered(e -> getMainPane().setCursor(Cursor.MOVE));
+        getMainPane().setOnMouseEntered(e -> {
+            if (isClickActive) getMainPane().setCursor(Cursor.DEFAULT);
+            else getMainPane().setCursor(Cursor.MOVE);
+        });
         pane.setOnMouseClicked(e -> {
             if (draw == null && isClickActive) {
                 cords.add(new Complex(e.getX() - paneWidth / 2, paneWidth / 2 - e.getY()));
@@ -194,7 +197,7 @@ public class ArtBase extends LBase {
         resetButton.setOnAction(e -> reset());
         getTitleBar().add(resetButton);
 
-        getMainPane().requestFocus();
+        startButton.requestFocus();
     }
 
     public void reset() {
@@ -230,28 +233,15 @@ public class ArtBase extends LBase {
     public class Draw extends Thread {
         @Override
         public void run() {
+            gc.clearRect(0,0,paneWidth,paneWidth);
+            for (Complex c : cords) {
+                gc.fillOval(paneWidth / 2 + c.getReal() - 3, paneWidth / 2 - c.getImaginary() - 3, 6, 6);
+            }
+            gc.setStroke(Color.rgb(r.nextInt(1, 256), r.nextInt(1, 256), r.nextInt(1, 256)));
+            gc.setLineWidth(4);
+            double befX = getX(), befY = getY();
+
             synchronized (this) {
-                gc.setStroke(Color.rgb(r.nextInt(1, 256), r.nextInt(1, 256), r.nextInt(1, 256)));
-                gc.setLineWidth(4);
-                double befX = getX(), befY = getY();
-                for (int i = 0; i < COUNT_RATIO * cords.size(); i++) {
-                    try {
-                        mainCircle.rotate();
-                        gc.moveTo(befX, befY);
-                        gc.lineTo(befX = getX(), befY = getY());
-                        gc.stroke();
-                        gc.beginPath();
-                    } catch (Exception ignored) {}
-                    if (!isPlaying) {
-                        try {
-                            wait();
-                        } catch (InterruptedException ignored) {}
-                    }
-                    try {
-                        sleep(SLEEP_MS);
-                    } catch (InterruptedException ignored) {}
-                }
-                gc.setStroke(Color.rgb(r.nextInt(1, 256), r.nextInt(1, 256), r.nextInt(1, 256)));
                 for (int i = 0; i < COUNT_RATIO * cords.size(); i++) {
                     try {
                         mainCircle.rotate();
